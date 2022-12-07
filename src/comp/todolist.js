@@ -16,20 +16,21 @@ export function ToDoList(props){
   }
 
   function CreateLi(props) {
-    let addClass = "";
-    if(props.value.completed){
-      addClass = "completed"; 
-    }
-    return <li className={addClass}>
+
+    return <li className={props.value.completed ?'completed':''}>
       <div className="view">
         <input className="toggle" type="checkbox" defaultChecked={props.value.completed} onChange={(e) => { 
              props.markAsCompleted(props.value); }} />
        <label onDoubleClick={enableEditLabel}>{props.value.title}</label>
-        <button className="destroy" onClick={(e) => {
+        <button className="destroy" onClick={() => {
           props.removeTodo(props.value);
         }} />
       </div>
-      <input onBlur={(e) => handleSaveEditedLabel(e, props.value)} className="edit" />
+      <input onKeyUp={(e) => {
+        if(e.key === "Enter"){
+          handleSaveEditedLabel(e, props.value)
+        }
+      }} onBlur={(e) => handleSaveEditedLabel(e, props.value)} className="edit" />
     </li>
   }
 

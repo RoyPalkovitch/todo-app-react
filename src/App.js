@@ -10,6 +10,12 @@ function App() {
   const [noneCompletedItemsCount, setNoneCompletedItemsCount] = useState(0);
 
   useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/todos')
+    .then(response => response.json())
+    .then(setTodos);
+  },[]);
+
+  useEffect(() => {
     const uncompleted = todos.filter(todo => !todo.completed).length;
     setNoneCompletedItemsCount(uncompleted);
   },[todos]);
@@ -28,18 +34,17 @@ function App() {
 
   const saveEditedLabel = (todo, value) => {
     todo.title = value;
-    setTodos(todos.concat());
+    setTodos([...todos]);
     console.log(todos);
   }
 
-  //remove all the completed tasks
   const clearAllCompleted = () => {
     const newTodos = todos.filter(todo => !todo.completed);
     setTodos(newTodos);
     console.log(newTodos);
   }
 
-  //update the array
+
   const toggleAll = (checkboxState) => {
     const newTodos = todos.map(todo => ({ ...todo, completed: checkboxState }))
     setTodos(newTodos);

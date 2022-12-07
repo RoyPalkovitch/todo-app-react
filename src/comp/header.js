@@ -9,7 +9,7 @@ export function Header(props){
   }
 
   function MainInput(props){
-    return <input type={props.type} className={props.className} placeholder={props.placeholder} onKeyUp={clickHandler} autoFocus />
+    return <input type={props.type} className={props.className} placeholder={props.placeholder} onKeyUp={clickHandler} />
   }
 
   return <header className={props.className}>
