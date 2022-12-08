@@ -1,8 +1,10 @@
 import './App.css';
 import { Header } from './comp/header.js';
-import { Section } from './comp/main.js';
+import { ToggleAll } from './comp/main.js';
 import { Footer } from './comp/footer.js';
-import {useEffect, useState} from 'react';
+import { ToDoList } from './comp/todolist';
+import { CreateLi } from "./comp/todolistitem";
+import { useEffect, useState } from 'react';
 
 function App() {
   const appTitle = "todos";
@@ -11,16 +13,18 @@ function App() {
 
   useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/todos')
-    .then(response => response.json())
-    .then(setTodos);
-  },[]);
+      .then(response => response.json())
+      .then(setTodos);
+
+  }, []);
 
   useEffect(() => {
     const uncompleted = todos.filter(todo => !todo.completed).length;
     setNoneCompletedItemsCount(uncompleted);
-  },[todos]);
+  }, [todos]);
 
   const addTodo = (title) => {
+    if (!title) return;
     const newTodos = [...todos, { title, completed: false }];
     setTodos(newTodos);
     console.log(newTodos);
@@ -31,12 +35,6 @@ function App() {
     setTodos(newTodos);
     console.log(newTodos);
   };
-
-  const saveEditedLabel = (todo, value) => {
-    todo.title = value;
-    setTodos([...todos]);
-    console.log(todos);
-  }
 
   const clearAllCompleted = () => {
     const newTodos = todos.filter(todo => !todo.completed);
@@ -51,20 +49,36 @@ function App() {
     console.log(newTodos);
   }
 
-  const markAsCompleted = (value) => {
-    value.completed = !value.completed;
-    setTodos([...todos]);
-    console.log(todos);
+  const markAsCompleted = (checked, todo, setTodo) => {
+    todo.completed = checked;
+    setTodo({ ...todo });
   }
 
-
+  const saveEditedLabel = (todo, newTitle) => {
+    todo.title = newTitle;
+  }
 
 
   return (
     <section className="todoapp">
-      <Header className="header" title={appTitle} adding={addTodo} />
-      <Section className="main" saveEditedLabel={saveEditedLabel} todos={todos} toggleAll={toggleAll} markAsCompleted={markAsCompleted} removeTodo={removeTodo} />
-      <Footer className="footer" countItemsLeft={noneCompletedItemsCount} clearAllCompleted={clearAllCompleted} />
+      <Header className="header"
+        title={appTitle}
+        adding={addTodo} />
+      <ToggleAll className="main" toggleAll={toggleAll} >
+        <ToDoList>
+          {todos.map(todo => {
+            return (
+              <CreateLi todo={todo}
+                removeTodo={removeTodo}
+                markAsCompleted={markAsCompleted}
+                saveEditedLabel={saveEditedLabel}
+              />)
+          })}
+        </ToDoList>
+      </ToggleAll>
+      <Footer className="footer"
+        countItemsLeft={noneCompletedItemsCount}
+        clearAllCompleted={clearAllCompleted} />
     </section>
   );
 }
