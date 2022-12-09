@@ -2,25 +2,23 @@ import { useEffect, useState } from 'react';
 
 export function CreateLi(props) {
   let [todo, setTodo] = useState(props.todo);
+  let [editingMode, setEditingMode] = useState(false);
 
   useEffect(() => {
     setTodo({ ...props.todo });
-  }, [props.todo]);
+  }, [props.todo, editingMode]);
 
   const enableEditLabel = (e) => {
-    const li = e.target.parentElement.parentElement;
-    li.classList.toggle('editing');
-    const input = li.querySelector('.edit');
-    input.focus();
+    setEditingMode(true);
   }
 
   const handleSaveEditedLabel = (e) => {
     props.todo.title = e.target.value;
-    setTodo({ ...props.todo });
+    setEditingMode(false);
   }
 
   return (
-    <li className={todo.completed ? 'completed' : ''}>
+    <li className={todo.completed ? 'completed' : '' + (editingMode ? 'editing': '')}>
       <div className="view">
         <input
           className="toggle"
@@ -36,16 +34,16 @@ export function CreateLi(props) {
           props.removeTodo(props.todo);
         }} />
       </div>
-      <input defaultValue={todo.title} onKeyUp={(e) => {
+      <input key={todo.title} defaultValue={todo.title} onKeyUp={(e) => {
         if (e.key === "Enter") {
           handleSaveEditedLabel(e);
-          const li = e.target.parentElement;
-          li.classList.remove('editing');
+          // const li = e.target.parentElement;
+          // li.classList.remove('editing');
         }
       }} onBlur={(e) => {
         handleSaveEditedLabel(e);
-        const li = e.target.parentElement;
-        li.classList.remove('editing');
+        // const li = e.target.parentElement;
+        // li.classList.remove('editing');
       }}
         className="edit" />
     </li>)

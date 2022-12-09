@@ -8,20 +8,32 @@ import { useEffect, useState } from 'react';
 
 function App() {
   const appTitle = "todos";
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState([
+    {title:'1', completed:false},
+    {title:'2', completed:true},
+    {title:'3', completed:false}
+
+  ]);
   const [noneCompletedItemsCount, setNoneCompletedItemsCount] = useState(0);
 
-  useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/todos')
-      .then(response => response.json())
-      .then(setTodos);
+  // useEffect(() => {
+  //   fetch('https://jsonplaceholder.typicode.com/todos')
+  //     .then(response => response.json())
+  //     .then(setTodos);
 
-  }, []);
+  // }, []);
+
+  // const updateItemsLeftCount = () => {
+  //   const uncompleted = todos.filter(todo => !todo.completed).length;
+  //   setNoneCompletedItemsCount(uncompleted);
+  // }
 
   useEffect(() => {
     const uncompleted = todos.filter(todo => !todo.completed).length;
     setNoneCompletedItemsCount(uncompleted);
   }, [todos]);
+
+
 
   const addTodo = (title) => {
     if (!title) return;
@@ -52,6 +64,8 @@ function App() {
   const markAsCompleted = (checked, todo, setTodo) => {
     todo.completed = checked;
     setTodo({ ...todo });
+    const uncompleted = todos.filter(todo => !todo.completed).length;
+    setNoneCompletedItemsCount(uncompleted);
   }
 
   const saveEditedLabel = (todo, newTitle) => {
@@ -63,7 +77,7 @@ function App() {
     <section className="todoapp">
       <Header className="header"
         title={appTitle}
-        adding={addTodo} />
+        addTodo={addTodo} />
       <ToggleAll className="main" toggleAll={toggleAll} >
         <ToDoList>
           {todos.map(todo => {
