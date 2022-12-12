@@ -1,92 +1,23 @@
+import { useRef, useState, useContext } from 'react';
 import './App.css';
-import { Header } from './comp/header.js';
-import { ToggleAll } from './comp/main.js';
-import { Footer } from './comp/footer.js';
-import { ToDoList } from './comp/todolist';
-import { CreateLi } from "./comp/todolistitem";
-import { useEffect, useState } from 'react';
+import { Outlet } from "react-router-dom";
+import { Navbar } from "../src/comp/navBar";
+import { AuthContext } from './providers/auth-context';
+
 
 function App() {
-  const appTitle = "todos";
-  const [todos, setTodos] = useState([
-  ]);
-  const [noneCompletedItemsCount, setNoneCompletedItemsCount] = useState(0);
-
-  useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/todos')
-      .then(response => response.json())
-      .then(setTodos);
-
-  }, []);
-
-
-  useEffect(() => {
-    const uncompleted = todos.filter(todo => !todo.completed).length;
-    setNoneCompletedItemsCount(uncompleted);
-  }, [todos]);
-
-
-
-  const addTodo = (title) => {
-    if (!title) return;
-    const newTodos = [...todos, { title, completed: false }];
-    setTodos(newTodos);
-    console.log(newTodos);
-  }
-
-  const removeTodo = (todoToRemove) => {
-    const newTodos = todos.filter(todo => todo !== todoToRemove);
-    setTodos(newTodos);
-    console.log(newTodos);
-  };
-
-  const clearAllCompleted = () => {
-    const newTodos = todos.filter(todo => !todo.completed);
-    setTodos(newTodos);
-    console.log(newTodos);
-  }
-
-
-  const toggleAll = (checkboxState) => {
-    const newTodos = todos.map(todo => ({ ...todo, completed: checkboxState }))
-    setTodos(newTodos);
-    console.log(newTodos);
-  }
-
-  const markAsCompleted = (checked, todo, setTodo) => {
-    todo.completed = checked;
-    setTodo({ ...todo });
-    const uncompleted = todos.filter(todo => !todo.completed).length;
-    setNoneCompletedItemsCount(uncompleted);
-  }
-
-  const saveEditedLabel = (todo, newTitle) => {
-    todo.title = newTitle;
-  }
-
-
+  const [currentUser, setCurrentUser] = useState(null);
   return (
-    <section className="todoapp">
-      <Header className="header"
-        title={appTitle}
-        addTodo={addTodo} />
-      <ToggleAll className="main" toggleAll={toggleAll} >
-        <ToDoList>
-          {todos.map(todo => {
-            return (
-              <CreateLi todo={todo}
-                removeTodo={removeTodo}
-                markAsCompleted={markAsCompleted}
-                saveEditedLabel={saveEditedLabel}
-              />)
-          })}
-        </ToDoList>
-      </ToggleAll>
-      <Footer className="footer"
-        countItemsLeft={noneCompletedItemsCount}
-        clearAllCompleted={clearAllCompleted} />
-    </section>
-  );
+    <>
+      <AuthContext.Provider value={{
+        currentUser,
+        setCurrentUser
+      }}>
+        <Navbar />
+        <Outlet />
+      </AuthContext.Provider>
+    </>
+  )
 }
 
 export default App;

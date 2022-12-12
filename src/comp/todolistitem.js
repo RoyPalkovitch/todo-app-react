@@ -1,49 +1,52 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { ListContext } from '../providers/list-context';
 
 export function CreateLi(props) {
-  let [todo, setTodo] = useState(props.todo);
-  let [editingMode, setEditingMode] = useState(false);
+  const [editingMode, setEditingMode] = useState(false);
+  const editInputRef = useRef(null);
+  const markCompletedInputRef = useRef(null);
 
-  useEffect(() => {
-    setTodo({ ...props.todo });
-  }, [props.todo, editingMode]);
+  const {markAsCompleted, saveEditedLabel,removeTodo}=useContext(ListContext);
+  useEffect(() =>{
+    editingMode && editInputRef.current.focus();
+    !editingMode && editInputRef.current.blur();
+  },[editingMode])
 
-  const enableEditLabel = (e) => {
+  const markAsCompletedHandler = () =>{
+    markAsCompleted(markCompletedInputRef.current.checked, props.todo)
+  }
+
+  const enableEditLabel = () => {
     setEditingMode(true);
   }
 
   const handleSaveEditedLabel = (e) => {
-    props.todo.title = e.target.value;
+    saveEditedLabel(props.todo, editInputRef.current.value)
     setEditingMode(false);
   }
 
   return (
-    <li className={todo.completed ? 'completed' : '' + (editingMode ? 'editing': '')}>
+    <li className={props.todo.completed ? 'completed' : '' + (editingMode ? 'editing': '')}>
       <div className="view">
         <input
           className="toggle"
           type="checkbox"
-          checked={todo.completed}
-          onChange={(e) => {
-            props.markAsCompleted(e.target.checked, props.todo, setTodo);
-          }} />
+          checked={props.todo.completed}
+          ref={markCompletedInputRef}
+          onChange={markAsCompletedHandler} />
         <label onDoubleClick={enableEditLabel}>
-          {todo.title}
+          {props.todo.title}
         </label>
         <button className="destroy" onClick={() => {
-          props.removeTodo(props.todo);
+          removeTodo(props.todo);
         }} />
       </div>
-      <input key={todo.title} defaultValue={todo.title} onKeyUp={(e) => {
+      <input ref={editInputRef} defaultValue={props.todo.title} onKeyUp={(e) => {
         if (e.key === "Enter") {
           handleSaveEditedLabel(e);
-          // const li = e.target.parentElement;
-          // li.classList.remove('editing');
         }
       }} onBlur={(e) => {
         handleSaveEditedLabel(e);
-        // const li = e.target.parentElement;
-        // li.classList.remove('editing');
       }}
         className="edit" />
     </li>)
